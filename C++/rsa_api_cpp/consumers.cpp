@@ -133,6 +133,17 @@ int peak_power_detector(float* traceData, double* freq, Spectrum_Settings specSe
 	return peakIndex;
 }
 
+int min_power_detector(float* traceData, double* freq, Spectrum_Settings specSet)
+{
+	int minIndex = 0;
+	for (int i = 0; i < specSet.traceLength; i++) {
+		if (traceData[i] < traceData[minIndex]) {
+			minIndex = i;
+		}
+	}
+
+	return minIndex;
+}
 
 void spectrum_example()
 {
@@ -144,6 +155,7 @@ void spectrum_example()
 	double* freq = NULL;
 	float* traceData = NULL;
 	int peakIndex = 0;
+	int minIndex = 0;
 
 	search_connect();
 	CONFIG_Preset();
@@ -154,12 +166,15 @@ void spectrum_example()
 	traceData = acquire_spectrum(specSet);
 	freq = create_frequency_array(specSet);
 	peakIndex = peak_power_detector(traceData, freq, specSet);
-	
+	minIndex = min_power_detector(traceData, freq, specSet);
+
 	cout << "Start frequency: " << freq[0] << endl;
 	cout << "Center frequency: " << freq[(specSet.traceLength - 1) / 2] << endl;
 	cout << "Stop frequency: " << freq[specSet.traceLength - 1] << endl;
 	cout << "Maximum value: " << traceData[peakIndex] << " dBm" << endl;
 	cout << "Frequency of max amplitude: " << freq[peakIndex] << " Hz" << endl;
+	cout << "Minimum value: " << traceData[minIndex] << " dBm" << endl;
+	cout << "Frequency of min amplitude: " << freq[minIndex] << " Hz" << endl;
 
 	cout << "Disconnecting." << endl;
 	DEVICE_Disconnect();
